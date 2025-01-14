@@ -14,9 +14,12 @@ endif
 export TEXMFHOME ?= lsst-texmf/texmf
 
 $(DOCNAME).pdf: $(tex) local.bib authors.tex
-	latexmk -bibtex -xelatex -f $(DOCNAME)
+	echo $(TEXMFHOME)
+	ls  $(TEXMFHOME)
+	latexmk -bibtex -pdf -f $(DOCNAME)
 
 authors.tex:  authors.yaml
+	echo $(TEXMFHOME)
 	python3 $(TEXMFHOME)/../bin/db2authors.py -m ascom > authors.tex
 
 .PHONY: clean
