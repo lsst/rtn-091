@@ -1,7 +1,60 @@
-\section{Physical Layer} \label{sec:physical}
+\section{Physical  Layer} \label{sec:physical}
 
 \subsection{Design}
-Scalability, Open design
+Though most heavy computing is to be done at the USDF a substantial system has been installed in the summit computer room.
+This is designed to run the Controllable SAL  Components (CSC), the Rubin Science Platform, the Engineering Facilities Database (EFD) and Kafka which underpins the control system and EFD communications.
+All of these components have been made Kubernetes deployable using the SQuaRE teams Phalanx system{\footnote\url{phalanx.lsst.io}}.
+A lot of storage is required to hold images and EFD data for at least a a month - this leads us to put over five PB of SSD on the summit.
+SSD is chosen as it is more reliable at altitude than spinning disk (also faster of course).
+EFD uses InfluxDB which operates best with attached storage - most of the rest is CEPH object store.
+The Camera team also have some specific requirements leading us to have a ten node Camera Diagnostic cluster which is not kubernetes based.
 
-\subsection{Legos}
-Blocks
+Or main aim on the summit is to have no manually configured machines - all should be at least puppet configured - even the Raspberry PIs.
+In this goal we have done well - yet a few specific machines from vendors are not part of the infrastructure as code.
+These we try to isolate as much as possible, most are wrapped by a Controllable SAL Component.
+
+
+\subsection{Reusable Nodes and Switches (Legos)}
+In the computer center, apart from the camera software (\secref{sec:cdc}), everything is containerized and deployed with kubernetes.
+This allows us to construct our cluster if similar nodes and make them available as kubernetes nodes.
+Currently there are  twenty blades half with 100 cores and half with 120 cores.
+
+MAC addresses are fed to Rancher which installs the basic operating system on each node when it is put on in the rack and powered on.
+Rancher also installs puppet which pulls all the appropriate  config from github setting up the node and including it in the
+cluster.
+Node affinity is used form some special nodes e.g. the InfluxDB nodes with attached storage.
+
+The observatory control system components and other software is then distributed among the nodes but kubernetes
+with some loose policies.
+Mostly they can run on any node - we like to balance them a bit.
+Death of a node causes it to drain and any components running on it reappear on another node.
+Since many nodes are available for adhoc processing this gives us a good fail over capacity.
+
+Once racked this entire system can be configured within a day, something which we had to practice once in the early days due to a power surge taking out sever nodes and switches.
+
+
+
+
+
+
+\subsection{Camera Diagnostic Cluster and Data Acquisition \label{sec:cdc}}
+
+The LSST Camera Data Acquisition (DAQ), for our purpose, are fourteen Field Programmable Gate Array (FPGA) boards connected by fibre optic cable directly to the back of the worlds largest digital camera.
+The boards are controlled by a manager node which distributes CCD level data to ten diagnostic cluster nodes which transfer the data to SLAC and performs local quality checks.
+There is also a Camera Control node which runs the camera control system.
+
+All of these machines are configured with puppet.
+
+\subsubsection{Precision Time Protocol (PTP)}
+
+As a requirements of the Camera Shutter timing PTP had to be implemented.
+This required configuration of all switches between the PTP server and camera shutter to handle PTP since by default they only handle NTP.
+The task turned out to be far more arduous than one might think it should be.
+
+\subsection{Physical networking}
+Our primary exit form the summit is a Dense Wave Division Multiplexer (DWDM) connected by 600 100Gbit fibers to the base in La Serena.
+The secure link to SLAC is handled by two pair (for redundancy ) of Arista routers running native AED 256 encryption.
+Most switches and spines in the summit are Juniper or Arista allowing us to use Open software-defined network.
+As noted in \secref{sec:networking}, all network switch configurations are done using Ansible.
+
+
