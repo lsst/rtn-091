@@ -53,8 +53,14 @@ The task turned out to be far more arduous than one might think it should be.
 
 \subsection{Physical networking}
 Our primary exit form the summit is a Dense Wave Division Multiplexer (DWDM) connected by 600 100Gbit fibers to the base in La Serena.
+Rubin uses around 105.000 km of fiber, including to Europe, of which  46.000 are underwater. Though the distance to Miami is only around 18KM the redundant fires cover an estimated 54,400 KM. After a short hop to Atlanta using three lines,  we are on ESNet dedicated bandwidth.
+
+As of 2025 we now have a dedicated exit to the internet form the AURA base site giving Rubin independence from eh AURA border routers.
+
 The secure link to SLAC is handled by two pair (for redundancy ) of Arista routers running native AED 256 encryption.
 Most switches and spines in the summit are Juniper or Arista allowing us to use Open software-defined network.
 As noted in \secref{sec:networking}, all network switch configurations are done using Ansible.
+
+There are about  six KM of fiber on the summit itself connecting all of the devices around the observatory.
 
 
