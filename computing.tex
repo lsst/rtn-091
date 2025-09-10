@@ -6,14 +6,41 @@ This in turn pushes us toward containerization for as much as possible so that a
 Once we have  bunch of container we need orchestration here we turn to kubernetes which we use across all Rubin sites including Google \citep{2021arXiv211115030O}.
 
 
-\subsection{Infrastructure as code}
-Infrastructure as code is no longer a new thing \citep{Morris2021IaC} bit on an observatory summit it is
+\subsection{Infrastructure as code \label{sec:iac}}
+Infrastructure as code is no longer a new thing \citep{Morris2021IaC} but on an observatory summit it is
 somewhat novel.
+It is very typical to have software installed or configuration changes at observatories which are frequently lost on reboot.
+One of our aims was to not have any such unknown configuration.
+All configuration should come from our repositories which are currently on github\footnote{\url{https://github.com/lsst-it/}}.
+Installs are all from repos, there should be nothing local on the Rubin machines apart from data taken from the observatory.
+An other aim here is the ability to setup a large number of nodes using a small team - hence uniformity and automation are crucial.
+Since all summit data is replicated to USDF in seconds this allows us to state we can install the entire summit from scratch on to new servers in a known amount of time (around one working day).
+
 
 \subsection{Automation}
+We commence with Foreman\footnote{Behind VPN \url{https://foreman.cp.lsst.org/}} which holds the operating system setup for all servers.
+Foreman for Rubin\citep{ITTN-011} provides :
 
-IaC, GitOps, CI/CD
+\begin{itemize}
+\item Preboot eXecution Environment(PXE) boot/provisioning
+\item DNS/DHCP management
+\item Puppet “external node classifier”
+\item Puppet agent report processor
+\end{itemize}
+
+Foreman allows us to reprovision baremetal or VMs without physically touching the hardware involved based on MAC address provided PXE boot is enabled.
+Once the correct operating system and puppet profile are installed on the hardware the puppet configuration {\url{https://github.com/lsst-it/lsst-control}} kicks in to being online the correct services according to the type of machine.
+For camera machines this is usually the end point.
+For Kubernetes nodes they will register with Rancher.
+Rancher allows us to control and monitor kubernetes clusters, networks and storage.
+
+As for all Rubin github repos the configuration repos follow a GitOps workflow with reviews for major changes and automated testing. Puppet is a form of continuous deployment so a change pushed to main will end up on the appropriate node some seconds later.
 
 \subsection{Monitoring}
-Health, Logs, Dashboards, Alerts
+Logging and monitoring are very important at our remote site with restricted access.
+We have consolidated all logs at each site and have a series of grafana dashboards to ease monitoring and debugging.
+
+\subsubsection{Alerts}
+Based on thresholds or event recorded in the logs we use Squadcast\footnote{\url{https://app.squadcast.com/}} to work through a rota of calls to appropriate staff.
+
 
