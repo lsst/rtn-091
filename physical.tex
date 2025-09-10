@@ -6,7 +6,7 @@ This is designed to run the Controllable SAL  Components (CSC), the Rubin Scienc
 All of these components have been made Kubernetes deployable using the SQuaRE teams Phalanx system{\footnote\url{phalanx.lsst.io}}.
 A lot of storage is required to hold images and EFD data for at least a a month - this leads us to put over five PB of SSD on the summit.
 SSD is chosen as it is more reliable at altitude than spinning disk (also faster of course).
-EFD uses InfluxDB which operates best with attached storage - most of the rest is CEPH object store.
+EFD uses InfluxDB which operates best with attached storage - most of the rest is Ceph\footnote{\url{ceph.io}} object store.
 The Camera team also have some specific requirements leading us to have a ten node Camera Diagnostic cluster which is not kubernetes based.
 
 Or main aim on the summit is to have no manually configured machines - all should be at least puppet configured - even the Raspberry PIs.
@@ -57,7 +57,7 @@ Rubin uses around 105.000 km of fiber, including to Europe, of which  46.000 are
 
 As of 2025 we now have a dedicated exit to the internet form the AURA base site giving Rubin independence from eh AURA border routers.
 
-The secure link to SLAC is handled by two pair (for redundancy ) of Arista routers running native AED 256 encryption.
+The secure link to SLAC is handled by two pair (for redundancy ) of Arista routers running native AES 256 encryption.
 Most switches and spines in the summit are Juniper or Arista allowing us to use Open software-defined network.
 As noted in \secref{sec:networking}, all network switch configurations are done using Ansible.
 

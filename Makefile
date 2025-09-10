@@ -13,7 +13,7 @@ endif
 
 export TEXMFHOME ?= lsst-texmf/texmf
 
-$(DOCNAME).pdf: $(tex) local.bib authors.tex
+$(DOCNAME).pdf: $(tex) local.bib authors.tex acronyms.tex
 	echo $(TEXMFHOME)
 	ls  $(TEXMFHOME)
 	latexmk -bibtex -pdf -f $(DOCNAME)
@@ -21,6 +21,9 @@ $(DOCNAME).pdf: $(tex) local.bib authors.tex
 authors.tex:  authors.yaml
 	echo $(TEXMFHOME)
 	python3 $(TEXMFHOME)/../bin/db2authors.py -m ascom > authors.tex
+
+acronyms.tex: $(tex) 
+	python3 $(TEXMFHOME)/../bin/generateAcronyms.py -t"IT DM" $(tex) 
 
 .PHONY: clean
 clean:
