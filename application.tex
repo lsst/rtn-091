@@ -1,7 +1,55 @@
 \section{Application Layer} \label{sec:application}
 
-\subsection{Deployments}
-Test Stands, Canary, Blue/Green
+One of the main aims of the Chile DevOps team is to provide application ready infrastructure to the Rubin Developers.
+The agreed line, for Chile and all Rubin sites, is a Kubernetes Cluster including ArgoCD with agreed persistent volumes.
+This includes an object store which holds images and other large files mostly indexed by Rubin's butler \citep{2022SPIE12189E..11J}.
+Our deployments are consistent, with the same configuration applied uniformly across all environments.
+We nominally have development, integration (or staging)  and production environments.
+Because we have specialized hardware at the summit such as the Camera but also various CRIOs we also
+have test stands with some of this hardware available for testing.
+
+
+
+\subsection{Deployments and environments}
+Within Rubin an application is deployed it an environment.
+One or more environments may exist at a given site.
+Deployments are mostly  handled by Phalanx{\url{phalanx.lsst.io}}.
+Since Phalanx is a set of configurations for all the environments and applications it
+knows all of the environments and applications making it easy to list these precisely from the
+configuration.
+For example environments are found at \url{https://phalanx.lsst.io/environments/}.
+Since this is all in GitHub all changes are tracked and reviewed.
+Deployments are kept up to date by ArgoCD\footnote{\url{https://argo-cd.readthedocs.io}} pulling changes from
+github.
+By default main is pulled from GitHub,  however a specific application may specify a branch which is very useful for development.
+
+We do not allow deployment directly to the summit rather all changes, not just to control software but  including OS and appliance upgrades, are first applied to a test stand to make sure they interact as expected with all of the components.
+
+
+For the summit we maintain two test stands:
+
+\begin{itemize}
+\item \bf{Tucson Test Stand} resides in Tucson as the name suggests and is the development test stand. It has a single Camera FPGA DAQ as well as a small Kubernetes cluster with the control system and other summit  applications deployed.
+Most CSCs are in simulation mode and the Camera FPGA is playing back data from its buffer (this however appears exactly the same to rest of the software as if the image came from the camera).
+The single FPGA DAQ can mimic AuxTel or ComCam.
+\item \bf{Base Test Stand} is in the Data Center at La Serena Chile and is the integration test stand.
+This Test Stand has a full Camera DAQ (14 FPGA) to fully mimic the LSST Camera.
+Along side this we have a small Kubernetes Cluster and a large CEPH storage appliance.
+Again most CSC are running in simulation mode but in addition there is some other National Instruments Hardware which may be pulled in as needed.
+\end{itemize}
+
+
+\subsubsection{What could be improved}
+Some changes are incredibly difficult to test before deployment.
+We do not have an identical network in the test stands so some network configurations must be done directly on the summit.
+These are tested as much as possible on base with the switches there but neither the switches nor the complexity are the same.
+This has caused problems at least once but not frequently.
+
+Though we strive to not allow deployments on the summit Rapid Analysis sometimes requires updates at night or on short notice and these are sent directly to the summit.
+Again the summit system is more complex and larger than the base - on the summit Rapid Analysis can spin up many hundreds pods using many cores on the the system.
+On the test stands this level of resource is not available so certain changes to deal with large volume can not be tested on the test stand.
+Such direct deployments have caused several issues which the observers see as DevOps problems but have not been to do with the underlying system.
+In operations we may more strictly restrict this sort of deployment.
 
 \subsection{Security}
 Detections, Identities, Monitoring
